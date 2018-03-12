@@ -2,9 +2,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
 public class Main {
@@ -21,6 +24,12 @@ public class Main {
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         parser.setSource(str.toCharArray());
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setResolveBindings(true);
+        parser.setBindingsRecovery(true);
+        Map options = JavaCore.getOptions();
+        JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
+        parser.setCompilerOptions(options);
+
 
         final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
@@ -31,15 +40,15 @@ public class Main {
             // checking declarations
             public boolean visit(VariableDeclarationFragment node) {
                 SimpleName name = node.getName();
-                node.resolveBinding();
                 String typeSimpleName;
 
                 if(node.getParent() instanceof FieldDeclaration){
                     FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
                     if(declaration.getType().isSimpleType()){
                         typeSimpleName = declaration.getType().toString().toLowerCase();
-                        if (typeSimpleName.contains(javaType.toLowerCase())) {
+                        if (typeSimpleName.equals(javaType.toLowerCase())) {
                             declarationsCount++;
+                            System.out.println(declaration.getType());
                             this.names.add(name.getIdentifier());
                         }
                     }
@@ -47,6 +56,12 @@ public class Main {
                 }
 
                 return false;
+            }
+
+            @Override
+            public boolean visit(TypeDeclaration node) {
+               System.out.println(node.getName().resolveBinding());
+                return super.visit(node);
             }
 
             // checking references
@@ -87,18 +102,13 @@ public class Main {
      * Read all files in specified directory
      * @throws IOException e
      */
-    private static void readFilesInDir() throws IOException{
-//        Scanner scan = new Scanner(System.in);
-//        String pathname = scan.nextLine();
-//        String javaType = scan.nextLine();
-        String pathname = "C:\\Users\\stealth 2017\\eclipse-workspace\\SENG3";
-        javaType = "String";
+    private static void readFilesInDir(String pathname) throws IOException{
         File dirs = new File(pathname);
         String dirPath = dirs.getCanonicalPath() + File.separator+"src"+File.separator;
-        
 
         File root = new File(dirPath);
         File[] files = root.listFiles ( );
+        System.out.println("Files in directory: " + Arrays.toString(files));
         String filePath;
 
         assert files != null;
@@ -111,7 +121,12 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        readFilesInDir();
+        String pathname = args[0];
+        javaType = args[1].toLowerCase();
+        String[] ting = javaType.split("\\.");
+        System.out.println(Arrays.toString(ting));
+        javaType = ting[ting.length-1];
+        readFilesInDir(pathname);
         System.out.print(javaType + ". Declarations found: " + declarationsCount + "; ");
         System.out.println("references found: " + referencesCount);
     }
