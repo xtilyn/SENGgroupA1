@@ -23,22 +23,24 @@ public class Main {
 
         cu.accept(new ASTVisitor() {
 
-            Set names = new HashSet();
+            Set<String> names = new HashSet<>();
 
             // checking declarations
             public boolean visit(VariableDeclarationFragment node) {
                 SimpleName name = node.getName();
                 node.resolveBinding();
-                String typeSimpleName = null;
-
+                String typeSimpleName;
 
                 if(node.getParent() instanceof FieldDeclaration){
                     FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
                     if(declaration.getType().isSimpleType()){
                         typeSimpleName = declaration.getType().toString();
-                        if (typeSimpleName.equals(javaType))
+                        if (typeSimpleName.equals(javaType)) {
                             declarationsCount++;
+                            this.names.add(name.getIdentifier());
+                        }
                     }
+
                 }
 
                 return false;
@@ -46,9 +48,8 @@ public class Main {
 
             // checking references
             public boolean visit(SimpleName node) {
-                String typeSimpleName = null;
                 if (this.names.contains(node.getIdentifier())) {
-                    //TODO if node is the specified javaType, referencesCount++
+                    referencesCount++;
                 }
                 return true;
             }
@@ -62,7 +63,7 @@ public class Main {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
         char[] buf = new char[10];
-        int numRead = 0;
+        int numRead;
         while ((numRead = reader.read(buf)) != -1) {
             String readData = String.valueOf(buf, 0, numRead);
             fileData.append(readData);
@@ -79,13 +80,13 @@ public class Main {
 //        Scanner scan = new Scanner(System.in);
 //        String pathname = scan.nextLine();
 //        String javaType = scan.nextLine();
-        String pathname = "C:\\Users\\stealth 2017\\eclipse-workspace\\471_Assignment_1";
+        String pathname = "C:\\Users\\stealth 2017\\eclipse-workspace\\SENG3";
         File dirs = new File(pathname);
         String dirPath = dirs.getCanonicalPath() + File.separator+"src"+File.separator;
 
         File root = new File(dirPath);
         File[] files = root.listFiles ( );
-        String filePath = null;
+        String filePath;
 
         assert files != null;
         for (File f : files ) {
