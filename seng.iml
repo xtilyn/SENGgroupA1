@@ -10,15 +10,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/org.eclipse.jdt.core-3.7.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$USER_HOME$/Desktop/lib/lib/commons-collections-3.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -110,6 +101,15 @@
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/Desktop/lib/lib/org.eclipse.osgi_3.5.2.R35x_v20100126.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Desktop/lib/lib/org.eclipse.jdt.core-3.7.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
