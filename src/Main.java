@@ -12,9 +12,7 @@ import org.eclipse.jdt.core.dom.*;
 
 public class Main {
 
-	private static int declarationsCount;
-	private static int referencesCount;
-	private static String javaType;
+    private static ASTVisitor astVisitor;
 
 	/**
 	 * Parse the string (file content) and count declarations and references
@@ -23,7 +21,7 @@ public class Main {
 	 *            string to parse
 	 */
 	private static void parse(String str, String[] srcPaths, String unitName) {
-		ASTParser parser = ASTParser.newParser(AST.JLS9);
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(str.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setEnvironment(null, srcPaths, null, false);
@@ -33,72 +31,12 @@ public class Main {
 		parser.setUnitName(unitName);
 
 		Map<String, String> options = JavaCore.getOptions();
-		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
 		parser.setCompilerOptions(options);
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
-		cu.accept(new ASTVisitor() {
-
-			Set<String> names = new HashSet<>();
-
-			// checking declarations
-			public boolean visit(VariableDeclarationFragment node) {
-				SimpleName name = node.getName();
-				String typeSimpleName;
-
-				//System.out.println(
-				//		name + "   " + node.getParent().getClass() + "    " + node.getParent().getParent().getClass());
-				//System.out.println(node.resolveBinding().getVariableDeclaration());
-
-				if (node.getParent() instanceof FieldDeclaration) {
-					FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
-
-					// System.out.println(declaration.getType());
-
-					typeSimpleName = declaration.getType().toString();
-
-					if (typeSimpleName.equals(javaType)) {
-						referencesCount++;
-						// System.out.println(declaration.getType());
-						this.names.add(name.getIdentifier());
-					}
-
-				} else if (node.getParent() instanceof VariableDeclarationStatement) {
-					VariableDeclarationStatement declaration = (VariableDeclarationStatement) node.getParent();
-					typeSimpleName = declaration.getType().toString();
-
-					if (typeSimpleName.equals(javaType)) {
-						referencesCount++;
-						// System.out.println(declaration.getType());
-						this.names.add(name.getIdentifier());
-					}
-
-				}
-
-				return false;
-			}
-
-			@Override
-			public boolean visit(TypeDeclaration node) {
-				System.out.println(node.getName());
-				if (node.resolveBinding().getQualifiedName().endsWith(javaType)) {
-					declarationsCount++;
-				}
-				else if(node.getName().toString().equals("Go")) {
-					System.out.println("yep  " + node.resolveBinding().getQualifiedName());
-				}
-				return super.visit(node);
-			}
-
-			// checking references
-			public boolean visit(SimpleName node) {
-				if (this.names.contains(node.getIdentifier())) {
-					referencesCount++;
-				}
-				return true;
-			}
-		});
+		cu.accept(astVisitor);
 
 	}
 
@@ -153,19 +91,14 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
-		declarationsCount = 0;
-		referencesCount = 0;
-		if (args.length <= 1) {
-			System.out.println("Not enough arguments");
-			return;
-		}
 		String pathname = args[0];
-		javaType = args[1];
+		String javaType = args[1];
+		astVisitor = new ASTVisitor(0,0,javaType);
 		// String[] ting = javaType.split("\\.");
 		// System.out.println(Arrays.toString(ting));
 		// javaType = ting[ting.length-1];
 		readFilesInDir(pathname);
-		System.out.print(javaType + ". Declarations found: " + declarationsCount + "; ");
-		System.out.println("references found: " + referencesCount);
+		System.out.print(javaType + ". Declarations found: " + astVisitor.getDeclarationsCount() + "; ");
+		System.out.println("references found: " + astVisitor.getReferencesCount());
 	}
 }
