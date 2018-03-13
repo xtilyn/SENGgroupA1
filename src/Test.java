@@ -12,7 +12,7 @@ public class TestMain{
 	@Test
 	public void testQualifiedName() {
 		try {
-			Main.main(new String[] {BASEDIR + "\\testFiles1", "java.lang.String"});
+			Main.main(new String[] {BASEDIR + "\\testFiles1", "String"});
 		} catch (IOException e) {
 			fail();
 		}
