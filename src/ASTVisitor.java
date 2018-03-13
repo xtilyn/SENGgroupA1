@@ -65,6 +65,12 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
             referencesCount++;
         }
 
+        if (node.getParent() instanceof TypeDeclaration && node.getIdentifier().equals(javaType)) {
+            System.out.println("visit(SimpleName node): " + node.getParent().getClass() + " for " + node.getIdentifier() );
+            declarationsCount++;
+
+        }
+
         return true;
     }
 
