@@ -6,9 +6,9 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Test;
 
-class TestMain{
+public class TestMain{
 	
-	private static final String BASEDIR = "C:\\Users\\stealth 2017\\IdeaProjects\\seng";
+	private static final String BASEDIR = "C:\\Users\\abmis\\Documents\\GitHub\\SENGgroupA1";
 	
 	@After
 	public void teardown() {

@@ -94,9 +94,8 @@ public class Main {
 		String pathname = args[0];
 		String javaType = args[1];
 		astVisitor = new ASTVisitor(0,0,javaType);
-		// String[] ting = javaType.split("\\.");
-		// System.out.println(Arrays.toString(ting));
-		// javaType = ting[ting.length-1];
+		String[] ting = javaType.split("\\.");
+		javaType = ting[ting.length-1];
 		readFilesInDir(pathname);
 		System.out.print(javaType + ". Declarations found: " + astVisitor.getDeclarationsCount() + "; ");
 		System.out.println("references found: " + astVisitor.getReferencesCount());

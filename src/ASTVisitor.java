@@ -21,20 +21,13 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         SimpleName name = node.getName();
         String typeSimpleName;
 
-        System.out.println(
-                name + "   " + node.getParent().getClass() + "    " + node.getParent().getParent().getClass());
-        System.out.println(node.resolveBinding().getVariableDeclaration());
-
         if (node.getParent() instanceof FieldDeclaration) {
             FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
-
-            // System.out.println(declaration.getType());
 
             typeSimpleName = declaration.getType().toString();
 
             if (typeSimpleName.equals(javaType)) {
                 referencesCount++;
-                // System.out.println(declaration.getType());
                 this.names.add(name.getIdentifier());
             }
 
@@ -44,7 +37,6 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
 
             if (typeSimpleName.equals(javaType)) {
                 referencesCount++;
-                // System.out.println(declaration.getType());
                 this.names.add(name.getIdentifier());
             }
 
@@ -71,10 +63,6 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
     public boolean visit(SimpleName node) {
         if (this.names.contains(node.getIdentifier())) {
             referencesCount++;
-        }
-        if (node.getParent() instanceof TypeDeclaration) {
-            System.out.println("visit(SimpleName node): " + node.getParent().getClass() + " for " + node.getIdentifier() );
-
         }
 
         return true;
