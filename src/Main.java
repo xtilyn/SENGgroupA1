@@ -20,14 +20,18 @@ public class Main {
      * Parse the string (file content) and count declarations and references
      * @param str string to parse
      */
-    private static void parse(String str) {
-        ASTParser parser = ASTParser.newParser(AST.JLS3);
+    private static void parse(String str, String[] srcPaths, String unitName) {
+        ASTParser parser = ASTParser.newParser(AST.JLS9);
         parser.setSource(str.toCharArray());
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
+        parser.setEnvironment(null, srcPaths, null, false);
         parser.setResolveBindings(true);
         parser.setBindingsRecovery(true);
-        Map options = JavaCore.getOptions();
-        JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
+        parser.setStatementsRecovery(true);
+        parser.setUnitName(unitName);
+        
+        Map<String, String> options = JavaCore.getOptions();
+        JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
         parser.setCompilerOptions(options);
 
 
@@ -36,23 +40,36 @@ public class Main {
         cu.accept(new ASTVisitor() {
 
             Set<String> names = new HashSet<>();
-
+            
+            
             // checking declarations
             public boolean visit(VariableDeclarationFragment node) {
                 SimpleName name = node.getName();
                 String typeSimpleName;
 
+                System.out.println(name + "   " + node.getParent().getClass() + "    " + node.getParent().getParent().getClass());
+                System.out.println(node.resolveBinding().getVariableDeclaration());
+                
                 if(node.getParent() instanceof FieldDeclaration){
                     FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
+                    
+                    //System.out.println(declaration.getType());
+                    
                     if(declaration.getType().isSimpleType()){
-                        typeSimpleName = declaration.getType().toString().toLowerCase();
-                        if (typeSimpleName.equals(javaType.toLowerCase())) {
+                        typeSimpleName = declaration.getType().toString();
+                        
+                        if (typeSimpleName.equals(javaType)) {
                             declarationsCount++;
-                            System.out.println(declaration.getType());
+                           // System.out.println(declaration.getType());
                             this.names.add(name.getIdentifier());
                         }
                     }
 
+                }
+                else if(node.getParent() instanceof VariableDeclarationStatement) {
+                	VariableDeclarationStatement declaration = (VariableDeclarationStatement) node.getParent();
+                	System.out.println(declaration.getType());
+                	
                 }
 
                 return false;
@@ -60,7 +77,7 @@ public class Main {
 
             @Override
             public boolean visit(TypeDeclaration node) {
-               System.out.println(node.getName().resolveBinding());
+               System.out.println(node.resolveBinding().getQualifiedName());
                 return super.visit(node);
             }
 
@@ -104,28 +121,29 @@ public class Main {
      */
     private static void readFilesInDir(String pathname) throws IOException{
         File dirs = new File(pathname);
-        String dirPath = dirs.getCanonicalPath() + File.separator+"src"+File.separator;
+        String dirPath = dirs.getCanonicalPath() + File.separator;
 
         File root = new File(dirPath);
         File[] files = root.listFiles ( );
         System.out.println("Files in directory: " + Arrays.toString(files));
         String filePath;
+        
 
         assert files != null;
         for (File f : files ) {
             filePath = f.getAbsolutePath();
-            if(f.isFile()){
-                parse(readFileToString(filePath));
+            if(f.isFile() && filePath.endsWith(".java")){
+                parse(readFileToString(filePath), new String[] {pathname}, f.getName());
             }
         }
     }
 
     public static void main(String[] args) throws IOException {
         String pathname = args[0];
-        javaType = args[1].toLowerCase();
-        String[] ting = javaType.split("\\.");
-        System.out.println(Arrays.toString(ting));
-        javaType = ting[ting.length-1];
+        javaType = args[1];
+        //String[] ting = javaType.split("\\.");
+        //System.out.println(Arrays.toString(ting));
+        //javaType = ting[ting.length-1];
         readFilesInDir(pathname);
         System.out.print(javaType + ". Declarations found: " + declarationsCount + "; ");
         System.out.println("references found: " + referencesCount);
