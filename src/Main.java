@@ -12,8 +12,8 @@ import org.eclipse.jdt.core.dom.*;
 
 public class Main {
 
-	private static int declarationsCount = 0;
-	private static int referencesCount = 0;
+	private static int declarationsCount;
+	private static int referencesCount;
 	private static String javaType;
 
 	/**
@@ -47,9 +47,9 @@ public class Main {
 				SimpleName name = node.getName();
 				String typeSimpleName;
 
-				System.out.println(
-						name + "   " + node.getParent().getClass() + "    " + node.getParent().getParent().getClass());
-				System.out.println(node.resolveBinding().getVariableDeclaration());
+				//System.out.println(
+				//		name + "   " + node.getParent().getClass() + "    " + node.getParent().getParent().getClass());
+				//System.out.println(node.resolveBinding().getVariableDeclaration());
 
 				if (node.getParent() instanceof FieldDeclaration) {
 					FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
@@ -81,8 +81,12 @@ public class Main {
 
 			@Override
 			public boolean visit(TypeDeclaration node) {
-				if (node.resolveBinding().getQualifiedName().equals(javaType)) {
+				System.out.println(node.getName());
+				if (node.resolveBinding().getQualifiedName().endsWith(javaType)) {
 					declarationsCount++;
+				}
+				else if(node.getName().toString().equals("Go")) {
+					System.out.println("yep  " + node.resolveBinding().getQualifiedName());
 				}
 				return super.visit(node);
 			}
@@ -149,6 +153,12 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
+		declarationsCount = 0;
+		referencesCount = 0;
+		if (args.length <= 1) {
+			System.out.println("Not enough arguments");
+			return;
+		}
 		String pathname = args[0];
 		javaType = args[1];
 		// String[] ting = javaType.split("\\.");
