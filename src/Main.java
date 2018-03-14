@@ -94,6 +94,10 @@ public class Main {
 		}
 		return astVisitor;
 	}
+	
+	public static void setTarget(String type) {
+		javaType = type;
+	}
 
 	public static void main(String[] args) {
 		String pathname = args[0];

@@ -102,4 +102,59 @@ public class TestMain{
 		}
 	}
 	
+	@Test
+	public void testParseAll1QualifiedName() {
+		String path = BASEDIR + "\\testFiles1\\hi.java";
+		Main.setTarget("java.lang.String");
+		try {
+			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			assertEquals(6, result.getReferencesCount());
+			assertEquals(0, result.getDeclarationsCount());
+		} catch (IOException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testParseAll1UnQualifiedName() {
+		String path = BASEDIR + "\\testFiles1\\hi.java";
+		Main.setTarget("String");
+		try {
+			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			assertEquals(6, result.getReferencesCount());
+			assertEquals(0, result.getDeclarationsCount());
+		} catch (IOException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testParseAll2QualifiedName() {
+		String path = BASEDIR + "\\testFiles1\\bye.java";
+		Main.setTarget("bye.Go");
+		try {
+			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			assertEquals(1, result.getDeclarationsCount());
+			assertEquals(2, result.getReferencesCount());
+		} catch (IOException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testParseAll2UnQualifiedName() {
+		String path = BASEDIR + "\\testFiles1\\bye.java";
+		Main.setTarget("Go");
+		try {
+			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			assertEquals(1, result.getDeclarationsCount());
+			assertEquals(2, result.getReferencesCount());
+		} catch (IOException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		}
+	}
 }
