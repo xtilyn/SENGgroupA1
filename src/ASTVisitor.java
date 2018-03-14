@@ -54,6 +54,7 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
     public boolean visit(TypeDeclaration node) {
         if (node.resolveBinding().getQualifiedName().equals(javaType)) {
             declarationsCount++;
+            System.out.println(node.getClass() + " : for real : " + node.toString());
         }
         return super.visit(node);
     }
@@ -66,11 +67,17 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         }
 
         if (node.getParent() instanceof TypeDeclaration && node.getIdentifier().equals(javaType)) {
-            declarationsCount++;
-
+        	ASTNode something = node.getParent().getParent();
+        	if(something != null)
+        		if(something.getClass() != CompilationUnit.class)
+        			declarationsCount++;
         }
 
         return true;
+    }
+    
+    public void preVisit(ASTNode node) {
+    	System.out.println(node.getClass() + " : " + node.toString());
     }
 
     public int getDeclarationsCount() {

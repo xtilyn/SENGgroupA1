@@ -161,7 +161,7 @@ public class TestMain{
 	@Test
 	public void testParseAll1QualifiedName() {
 		String path = BASEDIR + "\\testFiles2";
-		Main.setTarget("String");
+		Main.setTarget("java.lang.String");
 		try {
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
@@ -179,7 +179,7 @@ public class TestMain{
 	@Test
 	public void testParseAll1UnQualifiedName() {
 		String path = BASEDIR + "\\testFiles2";
-		Main.setTarget("java.lang.String");
+		Main.setTarget("String");
 		try {
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
@@ -202,7 +202,7 @@ public class TestMain{
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
-			assertEquals(3, result.getReferencesCount());
+			assertEquals(2, result.getReferencesCount());
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();
