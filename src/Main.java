@@ -12,7 +12,7 @@ import org.eclipse.jdt.core.dom.*;
 
 public class Main {
 
-    private static ASTVisitor astVisitor;
+    private static String javaType;
 
 	/**
 	 * Parse the string (file content) and count declarations and references
@@ -20,7 +20,7 @@ public class Main {
 	 * @param str
 	 *            string to parse
 	 */
-	private static void parse(String str, String[] srcPaths, String unitName) {
+	private static void parse(String str, String[] srcPaths, String unitName, ASTVisitor visitor) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(str.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -36,7 +36,7 @@ public class Main {
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 
-		cu.accept(astVisitor);
+		cu.accept(visitor);
 
 	}
 
@@ -49,7 +49,7 @@ public class Main {
 	 * @throws IOException
 	 *             e
 	 */
-	private static String readFileToString(String filePath) throws IOException {
+	public static String readFileToString(String filePath) throws IOException {
 		StringBuilder fileData = new StringBuilder(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 
@@ -72,32 +72,47 @@ public class Main {
 	 * @throws IOException
 	 *             e
 	 */
-	private static void readFilesInDir(String pathname) throws IOException {
+	public static File[] readFilesInDir(String pathname) throws IOException {
 		File dirs = new File(pathname);
 		String dirPath = dirs.getCanonicalPath() + File.separator;
 
 		File root = new File(dirPath);
 		File[] files = root.listFiles();
 		System.out.println("Files in directory: " + Arrays.toString(files));
+		
+		return files;
+	}
+	
+	public static ASTVisitor parseAll(File[] files) throws IOException {
 		String filePath;
-
-		assert files != null;
+		ASTVisitor astVisitor = new ASTVisitor(0,0,javaType);
 		for (File f : files) {
 			filePath = f.getAbsolutePath();
 			if (f.isFile() && filePath.endsWith(".java")) {
-				parse(readFileToString(filePath), new String[] { pathname }, f.getName());
+				parse(readFileToString(filePath), new String[] { f.getParent() }, f.getName(), astVisitor);
 			}
 		}
+		return astVisitor;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		String pathname = args[0];
-		String javaType = args[1];
-		astVisitor = new ASTVisitor(0,0,javaType);
-		String[] ting = javaType.split("\\.");
-		javaType = ting[ting.length-1];
-		readFilesInDir(pathname);
-		System.out.print(javaType + ". Declarations found: " + astVisitor.getDeclarationsCount() + "; ");
-		System.out.println("references found: " + astVisitor.getReferencesCount());
+		javaType = args[1];
+		String[] ting = javaType.split("\\.");			//comment out if trying to do the fully
+		javaType = ting[ting.length-1];					//qualified java name thing
+		ASTVisitor pointer;
+		
+		try {
+			File[] files = readFilesInDir(pathname);
+			if(files == null)
+				return;
+			pointer = parseAll(files);
+			System.out.print(javaType + ". Declarations found: " + pointer.getDeclarationsCount() + "; ");
+			System.out.println("references found: " + pointer.getReferencesCount());
+		}
+		catch(IOException e){
+			System.err.println("Something went horribaly wrong");
+			System.err.println(e.getMessage());
+		}
 	}
 }
