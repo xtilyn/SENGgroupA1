@@ -15,7 +15,7 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         this.referencesCount = referencesCount;
         this.javaType = javaType;
     }
-
+    
     // checking declarations
     public boolean visit(VariableDeclarationFragment node) {
         SimpleName name = node.getName();
@@ -24,7 +24,7 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         if (node.getParent() instanceof FieldDeclaration) {
             FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
 
-            typeSimpleName = declaration.getType().toString();
+            typeSimpleName = declaration.getType().resolveBinding().getQualifiedName();
 
             if (typeSimpleName.equals(javaType)) {
                 referencesCount++;
@@ -33,7 +33,7 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
 
         } else if (node.getParent() instanceof VariableDeclarationStatement) {
             VariableDeclarationStatement declaration = (VariableDeclarationStatement) node.getParent();
-            typeSimpleName = declaration.getType().toString();
+            typeSimpleName = declaration.getType().resolveBinding().getQualifiedName();
 
             if (typeSimpleName.equals(javaType)) {
                 referencesCount++;
@@ -66,7 +66,6 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         }
 
         if (node.getParent() instanceof TypeDeclaration && node.getIdentifier().equals(javaType)) {
-            System.out.println("visit(SimpleName node): " + node.getParent().getClass() + " for " + node.getIdentifier() );
             declarationsCount++;
 
         }

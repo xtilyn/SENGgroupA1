@@ -89,7 +89,9 @@ public class Main {
 		for (File f : files) {
 			filePath = f.getAbsolutePath();
 			if (f.isFile() && filePath.endsWith(".java")) {
-				parse(readFileToString(filePath), new String[] { f.getParent() }, f.getName(), astVisitor);
+				String name = f.getName();
+				name = name.substring(0, name.length() - 5);
+				parse(readFileToString(filePath), new String[] { f.getParent() }, name, astVisitor);
 			}
 		}
 		return astVisitor;
@@ -100,6 +102,9 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
+		if(args.length <= 1)
+			return;
+					
 		String pathname = args[0];
 		javaType = args[1];
 		String[] ting = javaType.split("\\.");			//comment out if trying to do the fully
