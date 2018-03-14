@@ -12,6 +12,8 @@ public class TestMain{
 	
 	private static final String BASEDIR = "C:\\Users\\abmis\\Documents\\GitHub\\SENGgroupA1";
 	
+	
+	//Passing
 	@Test
 	public void testFileFinding() {
 		String path = BASEDIR + "\\testFiles1";
@@ -24,6 +26,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Passing
 	@Test
 	public void testFileFinding2() {
 		String path = BASEDIR + "\\testFiles1";
@@ -37,6 +41,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Passing
 	@Test(expected = ArrayIndexOutOfBoundsException.class)
 	public void testFileFinding3() {
 		String path = BASEDIR + "\\testFileEmp";
@@ -51,6 +57,8 @@ public class TestMain{
 		
 	}
 	
+	
+	//Passing
 	@Test
 	public void testReadFile() {
 		String path = BASEDIR + "\\testRead\\uReadBro.txt";
@@ -67,6 +75,8 @@ public class TestMain{
 		}
 	}
 
+	
+	//Passing
 	@Test
 	public void testReadFile2() {
 		String path = BASEDIR + "\\testRead\\nofingHere.txt";
@@ -80,6 +90,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Passing
 	@Test
 	public void testReadFile3() {
 		String path = BASEDIR + "\\testRead\\lastOneIPromise.txt";
@@ -102,20 +114,24 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Unable to recognize references as of this type
 	@Test
 	public void testParseOne1QualifiedName() {
 		String path = BASEDIR + "\\testFiles1\\hi.java";
 		Main.setTarget("java.lang.String");
 		try {
 			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
-			assertEquals(6, result.getReferencesCount());
 			assertEquals(0, result.getDeclarationsCount());
+			assertEquals(6, result.getReferencesCount());
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();
 		}
 	}
 	
+	
+	//Passing
 	@Test
 	public void testParseOne1UnQualifiedName() {
 		String path = BASEDIR + "\\testFiles1\\hi.java";
@@ -130,6 +146,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Unable to recognize "new Go()" as reference
 	@Test
 	public void testParseOne2QualifiedName() {
 		String path = BASEDIR + "\\testFiles1\\bye.java";
@@ -144,6 +162,9 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Not expected to pass due to partial working of qualified name recognition
+	@Deprecated
 	@Test
 	public void testParseOne2UnQualifiedName() {
 		String path = BASEDIR + "\\testFiles1\\bye.java";
@@ -158,6 +179,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Unable to recognize references as of this type
 	@Test
 	public void testParseAll1QualifiedName() {
 		String path = BASEDIR + "\\testFiles2";
@@ -166,7 +189,7 @@ public class TestMain{
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
 			assertEquals(0, result.getDeclarationsCount());
-			assertEquals(7, result.getReferencesCount());
+			assertEquals(7, result.getReferencesCount());		//1 in Bye, 6 in Hi
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();
@@ -176,6 +199,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Passing, should not pass upon full implementation of qualified name recognition
 	@Test
 	public void testParseAll1UnQualifiedName() {
 		String path = BASEDIR + "\\testFiles2";
@@ -184,7 +209,7 @@ public class TestMain{
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
 			assertEquals(0, result.getDeclarationsCount());
-			assertEquals(7, result.getReferencesCount());
+			assertEquals(7, result.getReferencesCount());		//1 in Bye, 6 in Hi
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();
@@ -194,6 +219,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//Passing
 	@Test
 	public void testParseAll2NameBye() {
 		String path = BASEDIR + "\\testFiles2";
@@ -202,7 +229,7 @@ public class TestMain{
 			File[] files = Main.readFilesInDir(path);
 			ASTVisitor result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
-			assertEquals(2, result.getReferencesCount());
+			assertEquals(2, result.getReferencesCount());		//2 in Hi
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();
@@ -212,6 +239,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//should be recognizing 3 references at this point but only 2
 	@Test
 	public void testParseAll2QualifiedNameGo() {
 		String path = BASEDIR + "\\testFiles2";
@@ -230,6 +259,8 @@ public class TestMain{
 		}
 	}
 	
+	
+	//only recognizing 2 again
 	@Test
 	public void testParseAll2UnQualifiedNameGo() {
 		String path = BASEDIR + "\\testFiles2";
@@ -239,6 +270,23 @@ public class TestMain{
 			ASTVisitor result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(5, result.getReferencesCount());		//2 in Bye, 3 in Hi
+		} catch (IOException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.err.println("Bad Test Setup");
+			e.printStackTrace();
+		}
+	}
+	
+	//Passing
+	@Test
+	public void testParseAllDirectories() {
+		String path = BASEDIR + "\\testFileWut";
+		Main.setTarget("Irrelevent");
+		try {
+			File[] files = Main.readFilesInDir(path);
+			ASTVisitor result = Main.parseAll(files);
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();

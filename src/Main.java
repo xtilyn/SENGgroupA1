@@ -67,7 +67,12 @@ public class Main {
 	}
 
 	/**
-	 * Read all files in specified directory
+	 * get list of files in directory
+	 * 
+	 * @param pathname
+	 * 				path to directory
+	 * 
+	 * @return a File[] containing all files in directory
 	 * 
 	 * @throws IOException
 	 *             e
@@ -78,11 +83,16 @@ public class Main {
 
 		File root = new File(dirPath);
 		File[] files = root.listFiles();
-		System.out.println("Files in directory: " + Arrays.toString(files));
 		
 		return files;
 	}
 	
+	/**
+	 * parse all files and count the number of declarations and references of javaType
+	 * @param files array containing all files to be parsed
+	 * @return an ASTVisitor from which the number of declarations and references can be counted
+	 * @throws IOException if something goes wrong in readFileToString
+	 */
 	public static ASTVisitor parseAll(File[] files) throws IOException {
 		String filePath;
 		ASTVisitor astVisitor = new ASTVisitor(0,0,javaType);
@@ -107,8 +117,8 @@ public class Main {
 					
 		String pathname = args[0];
 		javaType = args[1];
-		String[] ting = javaType.split("\\.");			//comment out if trying to do the fully
-		javaType = ting[ting.length-1];					//qualified java name thing
+		//String[] ting = javaType.split("\\.");			//comment out if trying to do the fully
+		//javaType = ting[ting.length-1];					//qualified java name thing
 		ASTVisitor pointer;
 		
 		try {

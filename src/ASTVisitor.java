@@ -24,7 +24,7 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         if (node.getParent() instanceof FieldDeclaration) {
             FieldDeclaration declaration = ((FieldDeclaration) node.getParent());
 
-            typeSimpleName = declaration.getType().resolveBinding().getQualifiedName();
+            typeSimpleName = declaration.getType().resolveBinding().getQualifiedName();			//not working for classes that are not inner classes
 
             if (typeSimpleName.equals(javaType)) {
                 referencesCount++;
@@ -45,16 +45,11 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         return false;
     }
 
-//			@Override
-//			public boolean visit(ClassInstanceCreation node) {
-//				return super.visit(node);
-//			}
 
     @Override
     public boolean visit(TypeDeclaration node) {
         if (node.resolveBinding().getQualifiedName().equals(javaType)) {
             declarationsCount++;
-            System.out.println(node.getClass() + " : for real : " + node.toString());
         }
         return super.visit(node);
     }
@@ -74,10 +69,6 @@ public class ASTVisitor extends org.eclipse.jdt.core.dom.ASTVisitor {
         }
 
         return true;
-    }
-    
-    public void preVisit(ASTNode node) {
-    	System.out.println(node.getClass() + " : " + node.toString());
     }
 
     public int getDeclarationsCount() {
