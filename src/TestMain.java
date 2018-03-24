@@ -121,7 +121,7 @@ public class TestMain{
 		String path = BASEDIR + "\\testFiles1\\hi.java";
 		Main.setTarget("java.lang.String");
 		try {
-			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			ASTVisitorRef result = Main.parseAll(new File[] {new File(path)});
 			assertEquals(0, result.getDeclarationsCount());
 			assertEquals(6, result.getReferencesCount());
 		} catch (IOException e) {
@@ -137,7 +137,7 @@ public class TestMain{
 		String path = BASEDIR + "\\testFiles1\\hi.java";
 		Main.setTarget("String");
 		try {
-			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			ASTVisitorRef result = Main.parseAll(new File[] {new File(path)});
 			assertEquals(6, result.getReferencesCount());
 			assertEquals(0, result.getDeclarationsCount());
 		} catch (IOException e) {
@@ -153,7 +153,7 @@ public class TestMain{
 		String path = BASEDIR + "\\testFiles1\\bye.java";
 		Main.setTarget("bye.Go");
 		try {
-			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			ASTVisitorRef result = Main.parseAll(new File[] {new File(path)});
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(2, result.getReferencesCount());
 		} catch (IOException e) {
@@ -170,7 +170,7 @@ public class TestMain{
 		String path = BASEDIR + "\\testFiles1\\bye.java";
 		Main.setTarget("Go");
 		try {
-			ASTVisitor result = Main.parseAll(new File[] {new File(path)});
+			ASTVisitorRef result = Main.parseAll(new File[] {new File(path)});
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(2, result.getReferencesCount());
 		} catch (IOException e) {
@@ -187,7 +187,7 @@ public class TestMain{
 		Main.setTarget("java.lang.String");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 			assertEquals(0, result.getDeclarationsCount());
 			assertEquals(7, result.getReferencesCount());		//1 in Bye, 6 in Hi
 		} catch (IOException e) {
@@ -207,7 +207,7 @@ public class TestMain{
 		Main.setTarget("String");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 			assertEquals(0, result.getDeclarationsCount());
 			assertEquals(7, result.getReferencesCount());		//1 in Bye, 6 in Hi
 		} catch (IOException e) {
@@ -227,7 +227,7 @@ public class TestMain{
 		Main.setTarget("Bye");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(2, result.getReferencesCount());		//2 in Hi
 		} catch (IOException e) {
@@ -247,7 +247,7 @@ public class TestMain{
 		Main.setTarget("Bye.Go");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(5, result.getReferencesCount());		//2 in Bye, 3 in Hi
 		} catch (IOException e) {
@@ -267,7 +267,7 @@ public class TestMain{
 		Main.setTarget("Go");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 			assertEquals(1, result.getDeclarationsCount());
 			assertEquals(5, result.getReferencesCount());		//2 in Bye, 3 in Hi
 		} catch (IOException e) {
@@ -286,7 +286,7 @@ public class TestMain{
 		Main.setTarget("Irrelevent");
 		try {
 			File[] files = Main.readFilesInDir(path);
-			ASTVisitor result = Main.parseAll(files);
+			ASTVisitorRef result = Main.parseAll(files);
 		} catch (IOException e) {
 			System.err.println("Bad Test Setup");
 			e.printStackTrace();

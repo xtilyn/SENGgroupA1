@@ -1,0 +1,44 @@
+Test 1:
+
+Type searched for: A
+Expected results: A: declarations 1; references 0
+
+Test 2:
+
+Type searched for: B
+Expected results: B: declarations 1; references 9
+
+Test 3:
+
+Type searched for: C
+Expected results: C: declarations 1; references 5
+
+Test 4:
+
+Type searched for: D
+Expected results: declarations 1; references 0
+
+Test 5:
+
+Type searched for: D.E
+Expected results: declarations 1; references 2
+
+Test 6:
+
+Type searched for: E
+Expected results: declarations 0; references 0
+
+Test 7:
+
+Type searched for: foo.E
+Expected results: declarations 1; references 4
+
+Test 8:
+
+Type searched for: F
+Expected results: declarations 0; references 0
+
+Test 9:
+
+Type searched for: int
+Expected results: declarations 0; references 1

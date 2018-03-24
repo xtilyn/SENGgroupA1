@@ -2,10 +2,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
@@ -13,6 +10,7 @@ import org.eclipse.jdt.core.dom.*;
 public class Main {
 
     private static String javaType;
+    public static CompilationUnit cu;
 
 	/**
 	 * Parse the string (file content) and count declarations and references
@@ -20,7 +18,7 @@ public class Main {
 	 * @param str
 	 *            string to parse
 	 */
-	private static void parse(String str, String[] srcPaths, String unitName, ASTVisitor visitor) {
+	private static void parse(String str, String[] srcPaths, String unitName, ASTVisitorRef visitor) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(str.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -34,10 +32,9 @@ public class Main {
 		JavaCore.setComplianceOptions(JavaCore.VERSION_1_7, options);
 		parser.setCompilerOptions(options);
 
-		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
-
+		cu = (CompilationUnit) parser.createAST(null);
+		visitor.setCU(cu);
 		cu.accept(visitor);
-
 	}
 
 	/**
@@ -90,21 +87,21 @@ public class Main {
 	/**
 	 * parse all files and count the number of declarations and references of javaType
 	 * @param files array containing all files to be parsed
-	 * @return an ASTVisitor from which the number of declarations and references can be counted
+	 * @return an ASTVisitorRef from which the number of declarations and references can be counted
 	 * @throws IOException if something goes wrong in readFileToString
 	 */
-	public static ASTVisitor parseAll(File[] files) throws IOException {
+	public static ASTVisitorRef parseAll(File[] files) throws IOException {
 		String filePath;
-		ASTVisitor astVisitor = new ASTVisitor(0,0,javaType);
+		ASTVisitorRef astVisitorRef = new ASTVisitorRef(0,0,javaType);
 		for (File f : files) {
 			filePath = f.getAbsolutePath();
 			if (f.isFile() && filePath.endsWith(".java")) {
 				String name = f.getName();
 				name = name.substring(0, name.length() - 5);
-				parse(readFileToString(filePath), new String[] { f.getParent() }, name, astVisitor);
+				parse(readFileToString(filePath), new String[] { f.getParent() }, name, astVisitorRef);
 			}
 		}
-		return astVisitor;
+		return astVisitorRef;
 	}
 	
 	public static void setTarget(String type) {
@@ -119,7 +116,7 @@ public class Main {
 		javaType = args[1];
 		//String[] ting = javaType.split("\\.");			//comment out if trying to do the fully
 		//javaType = ting[ting.length-1];					//qualified java name thing
-		ASTVisitor pointer;
+		ASTVisitorRef pointer;
 		
 		try {
 			File[] files = readFilesInDir(pathname);
