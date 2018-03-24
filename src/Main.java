@@ -34,6 +34,11 @@ public class Main {
 
 		cu = (CompilationUnit) parser.createAST(null);
 		visitor.setCU(cu);
+		if (cu.getPackage() != null) {
+            System.out.println("Package declared: " + cu.getPackage().toString());
+            // TODO check if the package declared in the file != the package we're working on
+            // if so, don't parse this file
+        }
 		cu.accept(visitor);
 	}
 

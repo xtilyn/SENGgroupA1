@@ -13,13 +13,11 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
     Set<String> names = new HashSet<>();
     private CompilationUnit cu;
 
-    private List<Integer> startPositions;
 
     public ASTVisitorRef(int declarationsCount, int referencesCount, String javaType) {
         this.declarationsCount = declarationsCount;
         this.referencesCount = referencesCount;
         this.javaType = javaType;
-        startPositions = new ArrayList<>();
     }
 
     public void setCU(CompilationUnit cu) {
@@ -28,6 +26,7 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
 
     // checking declarations
     public boolean visit(VariableDeclarationFragment node) {
+
         SimpleName name = node.getName();
         String typeSimpleName;
 
@@ -42,12 +41,12 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
                 System.out.println("at line: " + cu.getLineNumber(node.getStartPosition()));
                 System.out.println("USAGE: " + (node.getParent().getParent()));
                 System.out.println("Parent class: " + (node.getParent().getParent().getClass()) + "\n\n");
-                startPositions.add(node.getStartPosition());
             }
 
         }
 
         return true;
+
     }
 
 
@@ -62,6 +61,7 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
 
     // checking references
     public boolean visit(SimpleName node) {
+
         if (node.getFullyQualifiedName().equals(javaType) && !(node.getParent() instanceof TypeDeclaration)
                 ) {
             if ((node.getParent().getParent() instanceof CompilationUnit)) {
@@ -73,21 +73,28 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
                     System.out.println("USAGE: " + (node.getParent().getParent()));
                     System.out.println("Parent class: " + (node.getParent().getParent().getClass()) + "\n\n");
                 }
+
             } else {
-                referencesCount++;
-                System.out.println("SIMPLENAME reference found: " + node.getFullyQualifiedName() + " identifier: " + node.getIdentifier());
-                System.out.println("at line: " + cu.getLineNumber(node.getStartPosition()));
-                System.out.println("USAGE: " + (node.getParent().getParent()));
-                System.out.println("Parent class: " + (node.getParent().getParent().getClass()) + "\n\n");
+                    referencesCount++;
+                    System.out.println("SIMPLENAME reference found: " + node.getFullyQualifiedName() + " identifier: " + node.getIdentifier());
+                    System.out.println("at line: " + cu.getLineNumber(node.getStartPosition()));
+                    System.out.println("USAGE: " + (node.getParent().getParent()));
+                    System.out.println("Parent class: " + (node.getParent().getParent().getClass()) + "\n\n");
             }
         }
 
         if (node.getParent() instanceof TypeDeclaration && node.getFullyQualifiedName().equals(javaType)) {
             if (node.getParent().getParent() instanceof TypeDeclaration) { // if this node is an inner-class
-                System.out.println("Found inner class: "+ node.getFullyQualifiedName());
-                declarationsCount++;
+                // get the fullname of the innerclass with its parent, separate with a period (Foo.Bar)
+                String parentClass = ((TypeDeclaration) node.getParent().getParent()).getName().toString();
+                String innerClass = node.getFullyQualifiedName();
+                String fullname = parentClass + "." + innerClass;
+                System.out.println("Found inner class: " + fullname);
+                if (fullname.equals(javaType)) {
+                    declarationsCount++;
+                }
             }
-            System.out.println("SIMPLENAME & TYPEDECLARATION: " + ((TypeDeclaration)node.getParent()).getName());
+            System.out.println("SIMPLENAME & TYPEDECLARATION: " + ((TypeDeclaration) node.getParent()).getName());
 //            ASTNode something = node.getParent().getParent();
 //            if (something != null)
 //                if (something.getClass() != CompilationUnit.class)
@@ -95,12 +102,13 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
         }
 
         return true;
-    }
 
+    }
 
 
     @Override
     public boolean visit(PrimitiveType node) {
+
         if (node.getPrimitiveTypeCode().toString().equals(javaType)) {
             referencesCount++;
             System.out.println("PRIMITIVE_TYPE reference found: " + node.getPrimitiveTypeCode());
@@ -110,6 +118,7 @@ public class ASTVisitorRef extends org.eclipse.jdt.core.dom.ASTVisitor {
 
         }
         return true;
+
     }
 
     public int getDeclarationsCount() {

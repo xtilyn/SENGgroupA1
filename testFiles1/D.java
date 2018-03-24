@@ -5,6 +5,7 @@ class D {
     }
 
     class E {
-	public E bar() {return new E();}
+	public E bar() {
+	    return new E();}
     }
 }

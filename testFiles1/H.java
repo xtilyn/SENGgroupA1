@@ -1,3 +1,5 @@
 package F;
 
-class H { int i; }
+class H {
+    int i;
+}
